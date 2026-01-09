@@ -1,0 +1,33 @@
+name: Mirror Docker image to GHCR
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull source image
+        run: docker pull ghcr.io/usememos/memos:latest      #别人的镜像  ghcr.io/usememos/memos:latest
+
+      - name: Re-tag
+        run: |
+          docker tag ghcr.io/usememos/memos:latest ghcr.io/${{ github.actor }}/hf-memos-260110:latest   #记得改别人的和自己的 
+
+      - name: Push to GHCR
+        run: docker push ghcr.io/${{ github.actor }}/hf-memos-260110:latest     #改成自己喜欢的名字hf-sunpanel
+
+      - name: Show result
+        run: |
+          echo "Pushed: ghcr.io/${{ github.actor }}/hf-memos-260110:latest"    #改成自己喜欢的名字hf-sunpanel
